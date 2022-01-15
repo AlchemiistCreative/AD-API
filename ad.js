@@ -26,9 +26,14 @@ function InitCo(cb){
 
 }
 
-function pushtoDB(){
-//TODO
+function push(){
+//TODO -> push to elasticsearch?
 
+}
+
+
+function updateUsers(){
+  //UPdate
 }
 
 function AddCommand(command,cb){
