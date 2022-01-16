@@ -7,11 +7,10 @@ routes.get('/', (req, res) => {
 });
 
 
-routes.get('/getuser', (req, res) => {
+routes.get('/update', (req, res) => {
 
-AD.GetUser("*", "UserPrincipalName", function (users){
-  
-  res.send(users)
+AD.update_user(function (results){
+res.send(results)
 })
 
 

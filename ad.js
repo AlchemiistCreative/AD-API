@@ -1,13 +1,17 @@
 const Shell = require('node-powershell');
 
+var es = require('./elasticsearch/index')
+
 const ps = new Shell({
     executionPolicy: 'Bypass',
     noProfile: true
   });
 
-var username  = ""
+var username  = ''
 var hostname = ''
 var remote = true
+
+
 
 function InitCo(cb){
   //Create Session and store it in variable
@@ -26,15 +30,6 @@ function InitCo(cb){
 
 }
 
-function push(){
-//TODO -> push to elasticsearch?
-
-}
-
-
-function updateUsers(){
-  //UPdate
-}
 
 function AddCommand(command,cb){
     
@@ -54,34 +49,42 @@ function GetUser(filters, attribute, cb){
 
   if(remote){
     InitCo(function(){
-      AddCommand(`Invoke-Command $session -ScriptBlock {$ProgressPreference = 'SilentlyContinue'; Get-ADUser -Filter ${filters} | Select-Object ${attribute} | ft -HideTableHeaders }`, function (output){
+      AddCommand(`Invoke-Command $session -ScriptBlock {$ProgressPreference = 'SilentlyContinue'; Get-ADUser -Filter ${filters} | Select-Object ${attribute} | ConvertTo-Json }`, function (output){
         cb(output);
       });
 
     })
   }else{
-    AddCommand(`$ProgressPreference = 'SilentlyContinue'; Get-ADUser ${filters} | Select-Object ${attribute}  | ft -HideTableHeaders`);
+    AddCommand(`$ProgressPreference = 'SilentlyContinue'; Get-ADUser ${filters} | Select-Object ${attribute}  | ConvertTo-Json `);
 
   }
 
 }
 
-function toJson(key,output){
 
-  var objects = output.split("\n");
+function update_user(cb){
+
+  GetUser("*", "*", function (users){
+
+  
+    for( var user of users){
+      console.log(user)
+    }
+
+    // es.push("activedirectory", users, function (output){
+     
+    //   cb(output)
+    // })
+
+
+  })
+ 
+ }
  
 
-  objects.forEach(element => {
-    var jsonObj = `{${key}:${element}}`
-    console.log(jsonObj)
-    return jsonObj
-  });
-  
-}
 
 module.exports = {
-  GetUser,
-  toJson
+  update_user
 };
 
 
